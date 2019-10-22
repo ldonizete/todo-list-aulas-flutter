@@ -14,6 +14,9 @@ class _TaskDialogState extends State<TaskDialog> {
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
 
+  TextEditingController _tituloController = TextEditingController();
+  TextEditingController _descricaoController = TextEditingController();
+
   Task _currentTask = Task();
 
   @override
@@ -35,40 +38,59 @@ class _TaskDialogState extends State<TaskDialog> {
     _descriptionController.clear();
   }
 
+   var _keyForm = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text(widget.task == null ? 'Nova tarefa' : 'Editar tarefas'),
-      content: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          TextField(
-              controller: _titleController,
+    return Form(
+      key: _keyForm,
+      child: AlertDialog(
+        title: Text(widget.task == null ? 'Nova tarefa' : 'Editar tarefas'),
+        content: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            TextFormField(
+              keyboardType: TextInputType.text,
               decoration: InputDecoration(labelText: 'Título'),
-              autofocus: true),
-          TextField(
-              controller: _descriptionController,
-              decoration: InputDecoration(labelText: 'Descrição')),
+              controller: _tituloController,
+              autofocus: true,
+              validator: (text)
+              {
+                return text.isEmpty ? "Insere o título" : null;
+              }
+            ),
+            TextFormField(
+              keyboardType: TextInputType.multiline,
+              decoration: InputDecoration(labelText: 'Descrição'),
+              controller: _descricaoController,
+              autofocus: true,
+              maxLines: 3,
+              validator: (text)
+              {
+                return text.isEmpty ? "Insira a descrição" : null;
+              },
+            )
+          ],
+        ),
+        actions: <Widget>[
+          FlatButton(
+            child: Text('Cancelar'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+          FlatButton(
+            child: Text('Salvar'),
+            onPressed: () {
+              if (_keyForm.currentState.validate()) {
+              _currentTask.title = _titleController.value.text;
+              _currentTask.description = _descriptionController.text;
+              Navigator.of(context).pop(_currentTask);
+              }
+            },
+          ),
         ],
       ),
-      actions: <Widget>[
-        FlatButton(
-          child: Text('Cancelar'),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
-        FlatButton(
-          child: Text('Salvar'),
-          onPressed: () {
-            _currentTask.title = _titleController.value.text;
-            _currentTask.description = _descriptionController.text;
-
-            Navigator.of(context).pop(_currentTask);
-          },
-        ),
-      ],
     );
   }
 }

@@ -29,7 +29,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Lista de Tarefas')),
+      appBar: AppBar(title: Text('Lista de tarefas')),
       floatingActionButton:
           FloatingActionButton(child: Icon(Icons.add), onPressed: _addNewTask),
       body: _buildTaskList(),
@@ -42,7 +42,8 @@ class _HomePageState extends State<HomePage> {
         child: _loading ? CircularProgressIndicator() : Text("Sem tarefas!"),
       );
     } else {
-      return ListView.builder(
+      return ListView.separated(
+        separatorBuilder: (BuildContext context, int index) => Divider(),
         itemBuilder: _buildTaskItemSlidable,
         itemCount: _taskList.length,
       );
