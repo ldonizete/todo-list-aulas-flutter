@@ -14,8 +14,7 @@ class _TaskDialogState extends State<TaskDialog> {
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
 
-  TextEditingController _tituloController = TextEditingController();
-  TextEditingController _descricaoController = TextEditingController();
+  String _priority;
 
   Task _currentTask = Task();
 
@@ -29,6 +28,7 @@ class _TaskDialogState extends State<TaskDialog> {
 
     _titleController.text = _currentTask.title;
     _descriptionController.text = _currentTask.description;
+    _priority = _currentTask.priority;
   }
 
   @override
@@ -36,6 +36,7 @@ class _TaskDialogState extends State<TaskDialog> {
     super.dispose();
     _titleController.clear();
     _descriptionController.clear();
+    _priority = "";
   }
 
    var _keyForm = GlobalKey<FormState>();
@@ -52,7 +53,7 @@ class _TaskDialogState extends State<TaskDialog> {
             TextFormField(
               keyboardType: TextInputType.text,
               decoration: InputDecoration(labelText: 'Título'),
-              controller: _tituloController,
+              controller: _titleController,
               autofocus: true,
               validator: (text)
               {
@@ -62,13 +63,29 @@ class _TaskDialogState extends State<TaskDialog> {
             TextFormField(
               keyboardType: TextInputType.multiline,
               decoration: InputDecoration(labelText: 'Descrição'),
-              controller: _descricaoController,
+              controller: _descriptionController,
               autofocus: true,
               maxLines: 3,
               validator: (text)
               {
                 return text.isEmpty ? "Insira a descrição" : null;
               },
+            ),
+            DropdownButton<String>(
+              items: <String>['1','2','3','4','5'].map( (String valor)
+                {
+                  return new DropdownMenuItem<String>(
+                    value: valor,
+                    child: new Text(valor),
+                  );
+                }).toList(),
+              onChanged: (String value) {
+                setState(() {
+                  _priority = value;
+                });
+              },
+              hint: Text('Nível de prioridade'),
+              value: _priority,
             )
           ],
         ),
@@ -85,6 +102,7 @@ class _TaskDialogState extends State<TaskDialog> {
               if (_keyForm.currentState.validate()) {
               _currentTask.title = _titleController.value.text;
               _currentTask.description = _descriptionController.text;
+              _currentTask.priority = _priority;
               Navigator.of(context).pop(_currentTask);
               }
             },
